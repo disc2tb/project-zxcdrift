@@ -24,10 +24,10 @@ public class CarController : MonoBehaviour
 
     private void LateUpdate()
     {
-        // _throttle = Input.GetAxis("Throttle");
+        _throttle = Input.GetAxis("Throttle");
         // _steering = Input.GetAxis("Steering");
         // _brake = Input.GetAxis("Brake");
-        // _handbrake = Input.GetAxisRaw("Handbrake");
+        // _handbrake = Input.GetAxis("Handbrake");
     }
 
     private void FixedUpdate()

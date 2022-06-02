@@ -12,13 +12,13 @@ public class WheelController : MonoBehaviour
 
     private float _length;
     private float _lastLength;
-    private float _minLength;
-    private float _maxLength;
 
     private float _springForce;
     private float _springVelocity;
     private float _damperForce;
     private Vector3 _suspensionForce;
+
+    private float _forceY;
 
     [Header("Wheel")]
     public float radius = 0.34f;
@@ -26,35 +26,51 @@ public class WheelController : MonoBehaviour
     public void Setup(Rigidbody body)
     {
         _body = body;
-        _minLength = springRestLength - springTravel;
-        _maxLength = springRestLength + springTravel;
     }
 
     public void Step(float throttle, float brake, float handbrake)
     {
-        Raycast();
+        RaycastHit hit = SuspensionForce();
+        TireForce(hit, throttle);
     }
 
-    private void Raycast()
+    private RaycastHit SuspensionForce()
     {
-        if (Physics.Raycast(transform.position, -transform.up, out RaycastHit hit, _maxLength + radius))
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, -transform.up, out hit, springRestLength + springTravel + radius))
         {
             _lastLength = _length;
-            _length = Mathf.Clamp(hit.distance - radius, _minLength, _maxLength);
+            _length = (transform.position - (hit.point + (transform.up * radius))).magnitude;
             _springVelocity = (_lastLength - _length) / Time.fixedDeltaTime;
-            _springForce = springStiffness * (springRestLength - _length);
+            _springForce = (springRestLength - _length) * springStiffness;
 
             _damperForce = damperStiffness * _springVelocity;
 
-            _suspensionForce = (_springForce + _damperForce) * transform.up;
+            _forceY = _springForce + _damperForce;
+            _suspensionForce = _forceY * hit.normal.normalized;
 
             _body.AddForceAtPosition(_suspensionForce, transform.position);
         }
         else
         {
-            _length = _maxLength;
+            _length = springRestLength + springTravel;
         }
 
         Debug.DrawRay(transform.position, -transform.up * (_length + radius), Color.magenta);
+        return hit;
+    }
+
+    private void TireForce(RaycastHit hit, float torque)
+    {
+        Vector3 linearVelocityLocal = transform.InverseTransformDirection(_body.GetPointVelocity(hit.point));
+
+        Vector3 force =
+            Vector3.ProjectOnPlane(transform.right, hit.normal).normalized *
+                (Mathf.Max(_forceY, 0) * Mathf.Clamp(linearVelocityLocal.x / -1, -1, 1)) +
+            Vector3.ProjectOnPlane(transform.forward, hit.normal).normalized *
+                (Mathf.Max(_forceY, 0) * torque);
+
+        _body.AddForceAtPosition(force, hit.point);
     }
 }
