@@ -3,7 +3,52 @@ guid: 487f8933a2913e34496bd48ca7662118
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: body
+    second: {fileID: 2100000, guid: ec72da1ddf5cad741ac8bea6b896f9ef, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: deco2
+    second: {fileID: 2100000, guid: d9f16cd12b4f2314896b6ce56da45ed4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: deco3
+    second: {fileID: 2100000, guid: ffdd0ba174302034cb08dca75d3ceb45, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: disk
+    second: {fileID: 2100000, guid: 2376d0b9ca2c32844a6bde30596822c6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: glass
+    second: {fileID: 2100000, guid: 34acce504476ae24a9fc06b4b756b6f4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lights1
+    second: {fileID: 2100000, guid: b064420afad184a4b87fd61e6f8791a6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lights2
+    second: {fileID: 2100000, guid: 8facc9d4fa3ac0e44b7d1080a20d8382, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: numplate
+    second: {fileID: 2100000, guid: cef9c06c7effd6248ad1bdf10af35046, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tire
+    second: {fileID: 2100000, guid: d75c8a3c0f4c6f942804c59bf4a1f7d5, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

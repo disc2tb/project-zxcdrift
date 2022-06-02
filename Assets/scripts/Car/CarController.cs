@@ -3,15 +3,22 @@
 public class CarController : MonoBehaviour
 {
     private Rigidbody _body;
+    
+    [Header("Settings")]
     public WheelController[] wheels;
-
-    private float _throttle;
-    private float _brake;
-    private float _handbrake;
-
-    private float _steering;
     public float maxSteering = 35;
 
+    [Header("Debugging")]
+    [SerializeField]
+    [ReadOnly]
+    public float _throttle;
+    [ReadOnly]
+    public float _brake;
+    [ReadOnly]
+    public float _handbrake;
+
+    [ReadOnly]
+    public float _steering;
     private void Start()
     {
         _body = GetComponent<Rigidbody>();
