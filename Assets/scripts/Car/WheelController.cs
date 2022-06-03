@@ -25,6 +25,7 @@ public class WheelController : MonoBehaviour
 
     [Header("Wheel")]
     public float radius = 0.34f;
+    public float tireRelaxationLength = 1;
     [ReadOnly]
     public float _slipX;
     [ReadOnly]
@@ -49,9 +50,9 @@ public class WheelController : MonoBehaviour
 
         UpdateModel();
 
-        // Debug.DrawRay(transform.position, transform.right * _forceX, Color.red);
+        Debug.DrawRay(transform.position, transform.right * _slipY, Color.red);
         Debug.DrawRay(transform.position, transform.up * _forceY * 0.0001f, Color.green);
-        // Debug.DrawRay(transform.position, transform.forward * _forceZ, Color.blue);
+        Debug.DrawRay(transform.position, transform.forward * _slipX, Color.blue);
     }
 
     private bool SuspensionForce()
@@ -85,7 +86,11 @@ public class WheelController : MonoBehaviour
 
     private void SlipY()
     {
-        _slipY = Mathf.Clamp(_linearVelocityLocal.x / -1, -1, 1);
+        // _slipY = Mathf.Clamp(_linearVelocityLocal.x / -1, -1, 1);
+
+        float maxSlip = Mathf.Sign(_linearVelocityLocal.x / -1);
+        float coeff = Mathf.Abs(_linearVelocityLocal.x) / tireRelaxationLength;
+        _slipY = Mathf.Clamp(_slipY + (maxSlip - _slipY) * coeff, -1, 1);
     }
 
     private void TireForce(float torque)
