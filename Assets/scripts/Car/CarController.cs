@@ -3,25 +3,26 @@
 public class CarController : MonoBehaviour
 {
     private Rigidbody _body;
-    
+
     [Header("Settings")]
     public WheelController[] wheels;
     public float maxSteering = 35;
+    public Transform centerOfMass;
 
     [Header("Debugging")]
-    [SerializeField]
     [ReadOnly]
     public float _throttle;
     [ReadOnly]
     public float _brake;
     [ReadOnly]
     public float _handbrake;
-
     [ReadOnly]
     public float _steering;
+
     private void Start()
     {
         _body = GetComponent<Rigidbody>();
+        _body.centerOfMass = centerOfMass.localPosition;
 
         foreach (WheelController wheel in wheels)
         {
@@ -46,7 +47,7 @@ public class CarController : MonoBehaviour
 
         foreach (WheelController wheel in wheels)
         {
-            wheel.Step(_throttle, _brake, _handbrake);
+            wheel.Step(_throttle);
         }
     }
 }
