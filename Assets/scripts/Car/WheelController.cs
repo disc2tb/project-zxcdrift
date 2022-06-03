@@ -5,6 +5,7 @@ public class WheelController : MonoBehaviour
     private Rigidbody _body;
     private RaycastHit _hit;
     private Vector3 _linearVelocityLocal;
+    private Transform _model;
 
     [Header("Suspesion")]
     public float springRestLength = 0.5f;
@@ -31,6 +32,7 @@ public class WheelController : MonoBehaviour
     public void Setup(Rigidbody body)
     {
         _body = body;
+        _model = transform.GetChild(0).GetComponent<Transform>();
     }
 
     public void Step(float throttle)
@@ -42,6 +44,8 @@ public class WheelController : MonoBehaviour
             SlipX(throttle);
             SlipY();
             TireForce(throttle);
+
+            UpdateModel();
         }
 
         // Debug.DrawRay(transform.position, transform.right * _forceX, Color.red);
@@ -92,5 +96,10 @@ public class WheelController : MonoBehaviour
                 (Mathf.Max(_forceY, 0) * _slipX);
 
         _body.AddForceAtPosition(force, _hit.point);
+    }
+
+    private void UpdateModel()
+    {
+        _model.localPosition = new Vector3(0, -_length, 0);
     }
 }

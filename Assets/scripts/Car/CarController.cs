@@ -7,6 +7,7 @@ public class CarController : MonoBehaviour
     [Header("Settings")]
     public WheelController[] wheels;
     public float maxSteering = 35;
+    public Transform centerOfMass;
 
     [Header("Debugging")]
     [ReadOnly]
@@ -21,6 +22,7 @@ public class CarController : MonoBehaviour
     private void Start()
     {
         _body = GetComponent<Rigidbody>();
+        _body.centerOfMass = centerOfMass.localPosition;
 
         foreach (WheelController wheel in wheels)
         {
