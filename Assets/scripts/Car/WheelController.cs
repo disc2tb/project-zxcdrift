@@ -27,6 +27,7 @@ public class WheelController : MonoBehaviour
     public float radius = 0.34f;
     [ReadOnly]
     public float _slipX;
+    [ReadOnly]
     public float _slipY;
 
     public void Setup(Rigidbody body)
