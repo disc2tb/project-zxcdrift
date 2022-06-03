@@ -44,9 +44,9 @@ public class WheelController : MonoBehaviour
             SlipX(throttle);
             SlipY();
             TireForce(throttle);
-
-            UpdateModel();
         }
+
+        UpdateModel();
 
         // Debug.DrawRay(transform.position, transform.right * _forceX, Color.red);
         Debug.DrawRay(transform.position, transform.up * _forceY * 0.0001f, Color.green);
