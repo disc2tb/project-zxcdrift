@@ -46,13 +46,13 @@ public class WheelController : MonoBehaviour
             SlipX(throttle);
             SlipY();
             TireForce(throttle);
+
+            Debug.DrawRay(transform.position, transform.right * _slipY * 2, Color.red);
+            Debug.DrawRay(transform.position, transform.up * _forceY * 0.0001f, Color.green);
+            Debug.DrawRay(transform.position, transform.forward * _slipX, Color.blue);
         }
 
         UpdateModel();
-
-        Debug.DrawRay(transform.position, transform.right * _slipY, Color.red);
-        Debug.DrawRay(transform.position, transform.up * _forceY * 0.0001f, Color.green);
-        Debug.DrawRay(transform.position, transform.forward * _slipX, Color.blue);
     }
 
     private bool SuspensionForce()

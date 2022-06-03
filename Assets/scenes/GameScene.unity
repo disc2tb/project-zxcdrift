@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44658017, g: 0.49641502, b: 0.57482153, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -377,6 +377,7 @@ MonoBehaviour:
   springStiffness: 30000
   damperStiffness: 4000
   radius: 0.34
+  tireRelaxationLength: 1
   _slipX: 0
   _slipY: 0
 --- !u!1 &343031653
@@ -1484,6 +1485,7 @@ MonoBehaviour:
   springStiffness: 30000
   damperStiffness: 4000
   radius: 0.34
+  tireRelaxationLength: 1
   _slipX: 0
   _slipY: 0
 --- !u!1 &1142782475
@@ -1708,6 +1710,7 @@ MonoBehaviour:
   springStiffness: 30000
   damperStiffness: 4000
   radius: 0.34
+  tireRelaxationLength: 1
   _slipX: 0
   _slipY: 0
 --- !u!1 &1206729935
@@ -1759,6 +1762,7 @@ MonoBehaviour:
   springStiffness: 30000
   damperStiffness: 4000
   radius: 0.34
+  tireRelaxationLength: 1
   _slipX: 0
   _slipY: 0
 --- !u!1 &1264293327 stripped
@@ -1930,7 +1934,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1433409000}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 3.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1943,7 +1947,7 @@ Transform:
   - {fileID: 1311200100}
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1433409002
 MonoBehaviour:
   m_ObjectHideFlags: 0
