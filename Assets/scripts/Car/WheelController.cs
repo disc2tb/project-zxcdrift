@@ -21,9 +21,7 @@ public class WheelController : MonoBehaviour
     private float _damperForce;
     private Vector3 _suspensionForce;
 
-    private float _forceX;
-    private float _forceY;
-    private float _forceZ;
+    private Vector3 _force;
 
     [Header("Wheel")]
     public float radius = 0.34f;
@@ -35,8 +33,7 @@ public class WheelController : MonoBehaviour
     public float _angularVelocity;
 
     [ReadOnly]
-    private float _slipX;
-    private float _slipY;
+    private Vector3 _slip; // up vector is unused, vector3 just because x and z components
     private float _slipAngle;
     private float _slipAngleDynamic;
 
@@ -54,13 +51,14 @@ public class WheelController : MonoBehaviour
         {
             _linearVelocityLocal = transform.InverseTransformDirection(_body.GetPointVelocity(_hit.point));
 
-            SlipX(torque);
-            SlipY();
+            SlipZ(torque);
+            SlipX();
+            // SlipC(); :smirk_cat:
             TireForce(torque);
 
-            Debug.DrawRay(transform.position, transform.right * _slipY * 2, Color.red);
-            Debug.DrawRay(transform.position, transform.up * _forceY * 0.0001f, Color.green);
-            Debug.DrawRay(transform.position, transform.forward * _slipX, Color.blue);
+            Debug.DrawRay(transform.position, transform.right * _slip.x * 2, Color.red);
+            Debug.DrawRay(transform.position, transform.up * _force.y * 0.0001f, Color.green);
+            Debug.DrawRay(transform.position, transform.forward * _slip.z, Color.blue);
         }
 
         UpdateModel();
@@ -77,8 +75,8 @@ public class WheelController : MonoBehaviour
 
             _damperForce = damperStiffness * _springVelocity;
 
-            _forceY = _springForce + _damperForce;
-            _suspensionForce = _forceY * _hit.normal.normalized;
+            _force.y = _springForce + _damperForce;
+            _suspensionForce = _force.y * _hit.normal.normalized;
 
             _body.AddForceAtPosition(_suspensionForce, transform.position);
             return true;
@@ -92,26 +90,26 @@ public class WheelController : MonoBehaviour
 
     private void Acceleration(float torque)
     {
-        float totalTorque = torque - _forceZ * radius; // torque - frictionTorque
+        float totalTorque = torque - _force.z * radius; // torque - frictionTorque
         float angularAcceleration = totalTorque / inertia;
 
         _angularVelocity = Mathf.Clamp(_angularVelocity + angularAcceleration * Time.fixedDeltaTime, -120, 120);
     }
 
-    private void SlipX(float torque)
+    private void SlipZ(float torque)
     {
         float targetAngularVelocity = _linearVelocityLocal.z / radius;
         float targetAngularAcceleration = (_angularVelocity - targetAngularVelocity) / Time.fixedDeltaTime;
         float targetFrictionTorque = targetAngularAcceleration * inertia;
-        float maxFrictionTorque = _forceY * radius;
+        float maxFrictionTorque = _force.y * radius;
 
-        if (_forceY == 0)
-            _slipX = 0;
+        if (_force.y == 0)
+            _slip.z = 0;
         else
-            _slipX = Mathf.Clamp(targetFrictionTorque / maxFrictionTorque, -1, 1); // TODO: remove clamp
+            _slip.z = Mathf.Clamp(targetFrictionTorque / maxFrictionTorque, -1, 1); // TODO: remove clamp
     }
 
-    private void SlipY()
+    private void SlipX()
     {
         if (_linearVelocityLocal.z != 0)
         {
@@ -133,17 +131,17 @@ public class WheelController : MonoBehaviour
             -90, 90
         );
 
-        _slipY = Mathf.Clamp(_slipAngleDynamic / slipAnglePeak, -1, 1); // TODO: remove clamp
+        _slip.x = Mathf.Clamp(_slipAngleDynamic / slipAnglePeak, -1, 1); // TODO: remove clamp
     }
 
     private void TireForce(float torque)
     {
-        _forceX = Mathf.Max(_forceY, 0) * _slipY;
-        _forceZ = Mathf.Max(_forceY, 0) * _slipX;
+        _force.x = Mathf.Max(_force.y, 0) * _slip.x;
+        _force.z = Mathf.Max(_force.y, 0) * _slip.z;
 
         Vector3 force =
-            Vector3.ProjectOnPlane(transform.right, _hit.normal).normalized * _forceX
-            + Vector3.ProjectOnPlane(transform.forward, _hit.normal).normalized * _forceZ;
+            Vector3.ProjectOnPlane(transform.right, _hit.normal).normalized * _force.x
+            + Vector3.ProjectOnPlane(transform.forward, _hit.normal).normalized * _force.z;
 
         _body.AddForceAtPosition(force, _hit.point);
     }
