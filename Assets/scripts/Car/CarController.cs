@@ -49,11 +49,10 @@ public class CarController : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             wheels[i].transform.localEulerAngles = new Vector3(0, _steering * maxSteering, 0);
+            wheels[i].Step(0);
         }
 
-        foreach (WheelController wheel in wheels)
-        {
-            wheel.Step(_throttle);
-        }
+        for (int i = 2; i < 4; i++)
+            wheels[i].Step(_throttle * 1000);
     }
 }

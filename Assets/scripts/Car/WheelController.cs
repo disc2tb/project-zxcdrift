@@ -21,20 +21,24 @@ public class WheelController : MonoBehaviour
     private float _damperForce;
     private Vector3 _suspensionForce;
 
+    private float _forceX;
     private float _forceY;
+    private float _forceZ;
 
     [Header("Wheel")]
     public float radius = 0.34f;
     public float tireRelaxationLength = 1;
     public float slipAnglePeak = 8;
+    public float inertia = 1.5f;
+
     [ReadOnly]
-    public float _slipX;
+    public float _angularVelocity;
+
     [ReadOnly]
-    public float _slipY;
-    [ReadOnly]
-    public float _slipAngle;
-    [ReadOnly]
-    public float _slipAngleDynamic;
+    private float _slipX;
+    private float _slipY;
+    private float _slipAngle;
+    private float _slipAngleDynamic;
 
     public void Setup(Rigidbody body)
     {
@@ -42,15 +46,17 @@ public class WheelController : MonoBehaviour
         _model = transform.GetChild(0).GetComponent<Transform>();
     }
 
-    public void Step(float throttle)
+    public void Step(float torque)
     {
+        Acceleration(torque);
+
         if (SuspensionForce())
         {
             _linearVelocityLocal = transform.InverseTransformDirection(_body.GetPointVelocity(_hit.point));
 
-            SlipX(throttle);
+            SlipX(torque);
             SlipY();
-            TireForce(throttle);
+            TireForce(torque);
 
             Debug.DrawRay(transform.position, transform.right * _slipY * 2, Color.red);
             Debug.DrawRay(transform.position, transform.up * _forceY * 0.0001f, Color.green);
@@ -84,9 +90,25 @@ public class WheelController : MonoBehaviour
         }
     }
 
-    private void SlipX(float throttle)
+    private void Acceleration(float torque)
     {
-        _slipX = throttle;
+        float totalTorque = torque - _forceZ * radius; // torque - frictionTorque
+        float angularAcceleration = totalTorque / inertia;
+
+        _angularVelocity = Mathf.Clamp(_angularVelocity + angularAcceleration * Time.fixedDeltaTime, -120, 120);
+    }
+
+    private void SlipX(float torque)
+    {
+        float targetAngularVelocity = _linearVelocityLocal.z / radius;
+        float targetAngularAcceleration = (_angularVelocity - targetAngularVelocity) / Time.fixedDeltaTime;
+        float targetFrictionTorque = targetAngularAcceleration * inertia;
+        float maxFrictionTorque = _forceY * radius;
+
+        if (_forceY == 0)
+            _slipX = 0;
+        else
+            _slipX = Mathf.Clamp(targetFrictionTorque / maxFrictionTorque, -1, 1); // TODO: remove clamp
     }
 
     private void SlipY()
@@ -116,11 +138,12 @@ public class WheelController : MonoBehaviour
 
     private void TireForce(float torque)
     {
+        _forceX = Mathf.Max(_forceY, 0) * _slipY;
+        _forceZ = Mathf.Max(_forceY, 0) * _slipX;
+
         Vector3 force =
-            Vector3.ProjectOnPlane(transform.right, _hit.normal).normalized *
-                (Mathf.Max(_forceY, 0) * _slipY) +
-            Vector3.ProjectOnPlane(transform.forward, _hit.normal).normalized *
-                (Mathf.Max(_forceY, 0) * _slipX);
+            Vector3.ProjectOnPlane(transform.right, _hit.normal).normalized * _forceX
+            + Vector3.ProjectOnPlane(transform.forward, _hit.normal).normalized * _forceZ;
 
         _body.AddForceAtPosition(force, _hit.point);
     }
@@ -128,5 +151,6 @@ public class WheelController : MonoBehaviour
     private void UpdateModel()
     {
         _model.localPosition = new Vector3(0, -_length, 0);
+        _model.Rotate(_angularVelocity * Mathf.Rad2Deg * Time.fixedDeltaTime, 0, 0);
     }
 }

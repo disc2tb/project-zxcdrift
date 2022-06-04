@@ -25,9 +25,9 @@ InputManager:
     m_Name: Throttle
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: 
+    negativeButton: down
     positiveButton: up
-    altNegativeButton: 
+    altNegativeButton: s
     altPositiveButton: w
     gravity: 3
     dead: 0.001
