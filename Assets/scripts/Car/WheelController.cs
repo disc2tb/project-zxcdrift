@@ -26,10 +26,15 @@ public class WheelController : MonoBehaviour
     [Header("Wheel")]
     public float radius = 0.34f;
     public float tireRelaxationLength = 1;
+    public float slipAnglePeak = 8;
     [ReadOnly]
     public float _slipX;
     [ReadOnly]
     public float _slipY;
+    [ReadOnly]
+    public float _slipAngle;
+    [ReadOnly]
+    public float _slipAngleDynamic;
 
     public void Setup(Rigidbody body)
     {
@@ -86,11 +91,27 @@ public class WheelController : MonoBehaviour
 
     private void SlipY()
     {
-        // _slipY = Mathf.Clamp(_linearVelocityLocal.x / -1, -1, 1);
+        if (_linearVelocityLocal.z != 0)
+        {
+            _slipAngle = Mathf.Rad2Deg * Mathf.Atan(-_linearVelocityLocal.x / Mathf.Abs(_linearVelocityLocal.z));
+        }
+        else
+        {
+            _slipAngle = 0;
+        }
 
-        float maxSlip = Mathf.Sign(_linearVelocityLocal.x / -1);
-        float coeff = Mathf.Abs(_linearVelocityLocal.x) / tireRelaxationLength;
-        _slipY = Mathf.Clamp(_slipY + (maxSlip - _slipY) * coeff, -1, 1);
+        float slipAngleLerp = Mathf.Lerp(slipAnglePeak * Mathf.Sign(-_linearVelocityLocal.x), _slipAngle,
+            Helpers.Map(3, 6, 0, 1, _linearVelocityLocal.magnitude)
+        );
+
+        float coeff = Mathf.Abs(_linearVelocityLocal.x) / tireRelaxationLength/* * Time.fixedDeltaTime*/;
+
+        _slipAngleDynamic = Mathf.Clamp(
+            _slipAngleDynamic + (slipAngleLerp - _slipAngleDynamic) * Mathf.Clamp(coeff, 0, 1),
+            -90, 90
+        );
+
+        _slipY = Mathf.Clamp(_slipAngleDynamic / slipAnglePeak, -1, 1); // TODO: remove clamp
     }
 
     private void TireForce(float torque)
