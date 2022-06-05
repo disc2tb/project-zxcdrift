@@ -30,7 +30,7 @@ public class WheelController : MonoBehaviour
     public float inertia = 1.5f;
 
     [ReadOnly]
-    public float _angularVelocity;
+    public float angularVelocity;
 
     [ReadOnly]
     private Vector3 _slip; // up vector is unused, vector3 just because x and z components
@@ -93,13 +93,13 @@ public class WheelController : MonoBehaviour
         float totalTorque = torque - _force.z * radius; // torque - frictionTorque
         float angularAcceleration = totalTorque / inertia;
 
-        _angularVelocity = Mathf.Clamp(_angularVelocity + angularAcceleration * Time.fixedDeltaTime, -120, 120);
+        angularVelocity = angularVelocity + angularAcceleration * Time.fixedDeltaTime;
     }
 
     private void SlipZ(float torque)
     {
         float targetAngularVelocity = _linearVelocityLocal.z / radius;
-        float targetAngularAcceleration = (_angularVelocity - targetAngularVelocity) / Time.fixedDeltaTime;
+        float targetAngularAcceleration = (angularVelocity - targetAngularVelocity) / Time.fixedDeltaTime;
         float targetFrictionTorque = targetAngularAcceleration * inertia;
         float maxFrictionTorque = _force.y * radius;
 
@@ -149,6 +149,6 @@ public class WheelController : MonoBehaviour
     private void UpdateModel()
     {
         _model.localPosition = new Vector3(0, -_length, 0);
-        _model.Rotate(_angularVelocity * Mathf.Rad2Deg * Time.fixedDeltaTime, 0, 0);
+        _model.Rotate(angularVelocity * Mathf.Rad2Deg * Time.fixedDeltaTime, 0, 0);
     }
 }

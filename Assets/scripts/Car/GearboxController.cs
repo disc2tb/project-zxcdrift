@@ -9,11 +9,10 @@ public class GearboxController : MonoBehaviour
     public float reverseRatio = -3.545f;
 
     [ReadOnly]
-    public float _ratio;
-    [ReadOnly]
-    public int _gear;
-    [ReadOnly]
-    public bool _inGear;
+    public float ratio;
+
+    private int _gear;
+    private bool _inGear;
 
     public float gearShiftTime = 0.1f;
 
@@ -27,9 +26,9 @@ public class GearboxController : MonoBehaviour
             _inGear = true;
 
         if (gear == -1)
-            _ratio = reverseRatio * mainRatio;
+            ratio = reverseRatio * mainRatio;
         else
-            _ratio = ratios[gear] * mainRatio;
+            ratio = ratios[gear] * mainRatio;
     }
 
     public IEnumerator ShiftGearUp()
@@ -64,11 +63,11 @@ public class GearboxController : MonoBehaviour
 
     public float GetOutputTorque(float inputTorque)
     {
-        return inputTorque * _ratio;
+        return inputTorque * ratio;
     }
 
     public float GetInputShaftVelocity(float outputShaftVelocity)
     {
-        return outputShaftVelocity * _ratio;
+        return outputShaftVelocity * ratio;
     }
 }

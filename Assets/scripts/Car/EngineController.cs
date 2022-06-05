@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Diagnostics;
+using UnityEngine;
 
 public class EngineController : MonoBehaviour
 {
@@ -11,18 +12,34 @@ public class EngineController : MonoBehaviour
     public float maxRPM = 7500;
 
     [ReadOnly]
-    public float _RPM;
+    public float angularVelocity = 100;
+
     [ReadOnly]
-    public float _angularVelocity = 100;
+    public float _RPM;
     [ReadOnly]
     public float _effectiveTorque;
 
-    public void Step(float throttle)
+    public float GetMaxTorque()
     {
-        Acceleration(throttle);
+        // Works only if highest point of torqueCurve is a key
+
+        float maxTorque = 0;
+
+        for (int i = 0; i < torqueCurve.length; i++)
+        {
+            if (torqueCurve.keys[i].value > maxTorque)
+                maxTorque = torqueCurve.keys[i].value;
+        }
+
+        return maxTorque;
     }
 
-    private void Acceleration(float throttle)
+    public void Step(float throttle, float loadTorque)
+    {
+        Acceleration(throttle, loadTorque);
+    }
+
+    private void Acceleration(float throttle, float loadTorque)
     {
         float frictionTorque = startFriction + _RPM * frictionCoefficient;
 
@@ -31,14 +48,14 @@ public class EngineController : MonoBehaviour
 
         _effectiveTorque = initialTorque - frictionTorque;
 
-        float angularAcceleration = _effectiveTorque / inertia;
+        float angularAcceleration = (_effectiveTorque - loadTorque) / inertia;
 
-        _angularVelocity = Mathf.Clamp(
-            _angularVelocity + angularAcceleration * Time.fixedDeltaTime,
+        angularVelocity = Mathf.Clamp(
+            angularVelocity + angularAcceleration * Time.fixedDeltaTime,
             idleRPM * Helpers.RPM2Rad,
             maxRPM * Helpers.RPM2Rad
         );
 
-        _RPM = _angularVelocity * Helpers.Rad2RPM;
+        _RPM = angularVelocity * Helpers.Rad2RPM;
     }
 }

@@ -6,6 +6,7 @@ public class CarController : MonoBehaviour
     private EngineController _engine;
     private GearboxController _gearbox;
     private DifferentialController _differential;
+    private ClutchController _clutch;
 
     [Header("Settings")]
     public WheelController[] wheels;
@@ -41,6 +42,9 @@ public class CarController : MonoBehaviour
         _engine = GetComponent<EngineController>();
         _gearbox = GetComponent<GearboxController>();
         _differential = GetComponent<DifferentialController>();
+        _clutch = GetComponent<ClutchController>();
+
+        _clutch.Setup(_engine.GetMaxTorque());
     }
 
     private void LateUpdate()
@@ -58,7 +62,8 @@ public class CarController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _engine.Step(_throttle);
+        float[] torque = _differential.GetOutputTorque(_gearbox.GetOutputTorque(_clutch.torque));
+        Debug.Log(torque[0] + " " + torque[1]);
 
         for (int i = 0; i < 2; i++)
         {
@@ -66,7 +71,14 @@ public class CarController : MonoBehaviour
             wheels[i].Step(0);
         }
 
-        for (int i = 2; i < 4; i++)
-            wheels[i].Step(_throttle * /*100*/0);
+        wheels[2].Step(torque[0]);
+        wheels[3].Step(torque[1]);
+
+        float inputShaftVelocity = _gearbox.GetInputShaftVelocity(
+            _differential.GetInputShaftVelocity(wheels[2].angularVelocity, wheels[3].angularVelocity)
+        );
+
+        _clutch.Step(inputShaftVelocity, _engine.angularVelocity, _gearbox.ratio);
+        _engine.Step(_throttle, _clutch.torque);
     }
 }
