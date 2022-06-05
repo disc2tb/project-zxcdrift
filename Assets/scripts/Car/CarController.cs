@@ -5,6 +5,7 @@ public class CarController : MonoBehaviour
     private Rigidbody _body;
     private EngineController _engine;
     private GearboxController _gearbox;
+    private DifferentialController _differential;
 
     [Header("Settings")]
     public WheelController[] wheels;
@@ -39,6 +40,7 @@ public class CarController : MonoBehaviour
 
         _engine = GetComponent<EngineController>();
         _gearbox = GetComponent<GearboxController>();
+        _differential = GetComponent<DifferentialController>();
     }
 
     private void LateUpdate()

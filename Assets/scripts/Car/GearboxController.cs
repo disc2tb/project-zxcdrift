@@ -64,15 +64,11 @@ public class GearboxController : MonoBehaviour
 
     public float GetOutputTorque(float inputTorque)
     {
-        float outputTorque = inputTorque * _ratio;
-
-        return outputTorque;
+        return inputTorque * _ratio;
     }
 
     public float GetInputShaftVelocity(float outputShaftVelocity)
     {
-        float inputShaftVelocity = outputShaftVelocity * _ratio;
-
-        return inputShaftVelocity;
+        return outputShaftVelocity * _ratio;
     }
 }
