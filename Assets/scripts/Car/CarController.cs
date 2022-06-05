@@ -3,6 +3,8 @@
 public class CarController : MonoBehaviour
 {
     private Rigidbody _body;
+    private EngineController _engine;
+    private GearboxController _gearbox;
 
     [Header("Settings")]
     public WheelController[] wheels;
@@ -34,6 +36,9 @@ public class CarController : MonoBehaviour
         {
             wheel.Setup(_body);
         }
+
+        _engine = GetComponent<EngineController>();
+        _gearbox = GetComponent<GearboxController>();
     }
 
     private void LateUpdate()
@@ -42,10 +47,17 @@ public class CarController : MonoBehaviour
         _steering = Input.GetAxis("Steering");
         // _brake = Input.GetAxis("Brake");
         // _handbrake = Input.GetAxis("Handbrake");
+
+        if (Input.GetKeyDown(KeyCode.P))
+            StartCoroutine(_gearbox.ShiftGearUp());
+        else if (Input.GetKeyDown(KeyCode.L))
+            StartCoroutine(_gearbox.ShiftGearDown());
     }
 
     private void FixedUpdate()
     {
+        _engine.Step(_throttle);
+
         for (int i = 0; i < 2; i++)
         {
             wheels[i].transform.localEulerAngles = new Vector3(0, _steering * maxSteering, 0);
@@ -53,6 +65,6 @@ public class CarController : MonoBehaviour
         }
 
         for (int i = 2; i < 4; i++)
-            wheels[i].Step(_throttle * 1000);
+            wheels[i].Step(_throttle * /*100*/0);
     }
 }
